@@ -7,17 +7,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+{
     private EditText result;
     private EditText newNumber;
     private TextView displayOperator;
-
     private Double operand1 = null;
-    private Double operand2 = null;
     private String pendingOperation = "=";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -62,5 +62,76 @@ public class MainActivity extends AppCompatActivity {
         button8.setOnClickListener(listener);
         button9.setOnClickListener(listener);
         buttonDot.setOnClickListener(listener);
+
+        View.OnClickListener opListener = new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Button b = (Button) view;
+                String op = b.getText().toString();
+                String value = newNumber.getText().toString();
+                try
+                {
+                    Double doubleValue = Double.valueOf(value);
+                    performOperation(doubleValue, op);
+                } catch (NumberFormatException e)
+                {
+                    newNumber.setText("");
+                }
+                pendingOperation = op;
+                displayOperator.setText(pendingOperation);
+            }
+        };
+
+        buttonEquals.setOnClickListener(opListener);
+        buttonDivide.setOnClickListener(opListener);
+        buttonMultiply.setOnClickListener(opListener);
+        buttonMinus.setOnClickListener(opListener);
+        buttonPlus.setOnClickListener(opListener);
+    }
+
+    private void performOperation(Double value, String op)
+    {
+        displayOperator.setText(op);
+
+        if(null == operand1)
+        {
+            operand1 = value;
+        } else
+            {
+
+            if(pendingOperation.equals("="))
+            {
+                pendingOperation = op;
+            }
+            switch (pendingOperation)
+            {
+                case "=":
+                    operand1 = value;
+                    break;
+                case "+":
+                    operand1 += value;
+                    break;
+                case "*":
+                    operand1 *= value;
+                    break;
+                case "/":
+                    if(value == 0)
+                    {
+                        operand1 = 0.0;
+                    }
+                    else
+                    {
+                        operand1 /= value;
+                    }
+                    break;
+                case "-":
+                    operand1 -= value;
+                    break;
+            }
+        }
+        result.setText(operand1.toString());
+        newNumber.setText("");
     }
 }
