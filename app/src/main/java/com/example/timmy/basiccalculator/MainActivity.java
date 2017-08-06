@@ -1,5 +1,6 @@
 package com.example.timmy.basiccalculator;
 
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +15,9 @@ public class MainActivity extends AppCompatActivity
     private TextView displayOperator;
     private Double operand1 = null;
     private String pendingOperation = "=";
+    private static final String STATE_PENDING_OPERATION = "pendingOperation";
+    private static final String STATE_OPERAND1 = "Operand1";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        //Buttons
         button0.setOnClickListener(listener);
         button1.setOnClickListener(listener);
         button2.setOnClickListener(listener);
@@ -84,11 +89,29 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        //Operations
         buttonEquals.setOnClickListener(opListener);
         buttonDivide.setOnClickListener(opListener);
         buttonMultiply.setOnClickListener(opListener);
         buttonMinus.setOnClickListener(opListener);
         buttonPlus.setOnClickListener(opListener);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(STATE_PENDING_OPERATION, pendingOperation);
+        if(operand1 != null) {
+            outState.putDouble(STATE_OPERAND1, operand1);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        pendingOperation = savedInstanceState.getString(STATE_PENDING_OPERATION);
+        operand1 = savedInstanceState.getDouble(STATE_OPERAND1);
+        displayOperator.setText(pendingOperation);
     }
 
     private void performOperation(Double value, String op)
@@ -98,9 +121,9 @@ public class MainActivity extends AppCompatActivity
         if(null == operand1)
         {
             operand1 = value;
-        } else
-            {
-
+        }
+        else
+        {
             if(pendingOperation.equals("="))
             {
                 pendingOperation = op;
